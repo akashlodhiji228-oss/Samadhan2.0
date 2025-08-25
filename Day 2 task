@@ -1,0 +1,25 @@
+// Day 2: Functions & Loops - Find Highest Marks
+
+// Array of marks
+let marks = [85, 92, 78, 96, 88, 91];
+
+// Function to find highest marks using for loop
+function findHighest(arr) {
+    let highest = arr[0];
+    
+    for (let i = 1; i < arr.length; i++) {
+        if (arr[i] > highest) {
+            highest = arr[i];
+        }
+    }
+    
+    return highest;
+}
+
+// Call the function
+let result = findHighest(marks);
+console.log("Highest marks:", result);
+
+
+The output is 
+  Highest marks 96
