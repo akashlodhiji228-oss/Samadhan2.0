@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Marks Calculator</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 500px; margin: 20px auto; padding: 20px; }
+        input, button { padding: 8px; margin: 5px; font-size: 16px; }
+        input { width: 200px; }
+        button { background: #4CAF50; color: white; border: none; cursor: pointer; }
+        .student { background: #f5f5f5; padding: 10px; margin: 5px 0; border-radius: 4px; }
+        .stats { background: #e8f4fd; padding: 15px; margin: 15px 0; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <h2>📊 Student Marks Calculator</h2>
+    
+    <input id="name" placeholder="Student name">
+    <input id="marks" type="number" placeholder="Marks (0-100)" min="0" max="100">
+    <button onclick="addStudent()">Add</button>
+    <button onclick="clearAll()">Clear</button>
+    
+    <div id="stats" style="display:none">
+        <h3>Stats</h3>
+        <p>Total: <span id="total">0</span> | Average: <span id="avg">0</span>% | Pass Rate: <span id="pass">0</span>%</p>
+    </div>
+    
+    <div id="list"></div>
+
+    <script>
+        let students = [];
+        
+        function addStudent() {
+            const name = document.getElementById('name').value.trim();
+            const marks = parseInt(document.getElementById('marks').value);
+            
+            if (!name || marks < 0 || marks > 100) return alert('Enter valid name and marks!');
+            
+            students.push({ id: Date.now(), name, marks });
+            document.getElementById('name').value = '';
+            document.getElementById('marks').value = '';
+            updateDisplay();
+        }
+        
+        function deleteStudent(id) {
+            students = students.filter(s => s.id !== id);
+            updateDisplay();
+        }
+        
+        function clearAll() {
+            students = [];
+            updateDisplay();
+        }
+        
+        function updateDisplay() {
+            const list = document.getElementById('list');
+            
+            if (students.length === 0) {
+                list.innerHTML = '<p>No students yet.</p>';
+                document.getElementById('stats').style.display = 'none';
+                return;
+            }
+            
+            // Display students using map
+            list.innerHTML = students.map(s => 
+                `<div class="student">${s.name} - ${s.marks}% 
+                <button onclick="deleteStudent(${s.id})">Delete</button></div>`
+            ).join('');
+            
+            // Calculate stats using array methods
+            const total = students.length;
+            const avg = Math.round(students.reduce((sum, s) => sum + s.marks, 0) / total);
+            const passed = students.filter(s => s.marks >= 60).length;
+            const passRate = Math.round((passed / total) * 100);
+            
+            document.getElementById('total').textContent = total;
+            document.getElementById('avg').textContent = avg;
+            document.getElementById('pass').textContent = passRate;
+            document.getElementById('stats').style.display = 'block';
+        }
+        
+        document.addEventListener('keypress', e => {
+            if (e.key === 'Enter') addStudent();
+        });
+    </script>
+</body>
+</html>
