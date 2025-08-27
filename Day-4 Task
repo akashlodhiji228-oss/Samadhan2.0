@@ -1,0 +1,52 @@
+# Day 4: Node.js Intro 🚀
+
+## 📖 Introduction
+This is my **Day 4 task** where I learned about Node.js basics and created my first simple API that returns "Hello, World!".
+
+---
+
+## 📝 Steps I Followed
+
+### 1️⃣ What is Node.js?
+Normally, JavaScript runs only inside the browser.  
+With Node.js, JavaScript can also run on the computer directly.  
+This makes it possible to build **servers, APIs, and backend applications** using JavaScript.
+
+---
+
+### 2️⃣ Install Node.js
+- I downloaded the **LTS version** from [nodejs.org](https://nodejs.org).
+- Checked versions:
+ 
+  node -v
+  npm -v
+
+
+###File: index.js
+  
+const http = require('http');
+
+const server = http.createServer((req, res) => {
+  if (req.url === "/api/hello") {
+    res.writeHead(200, { "Content-Type": "text/plain" });
+    res.end("Hello, World!");
+  } else {
+    res.writeHead(404, { "Content-Type": "text/plain" });
+    res.end("Page Not Found");
+  }
+});
+
+server.listen(3000, () => {
+  console.log("Server is running at http://localhost:3000");
+});
+
+###Run Terminal:
+
+  node index.js
+
+
+###Output:
+  Hello, World!
+
+
+
