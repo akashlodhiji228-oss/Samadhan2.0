@@ -1,0 +1,81 @@
+### Day 5: API returning a list of students (JSON)
+
+ 
+### Steps I Followed
+
+###File: app.js
+  
+const express = require('express');
+const app = express();
+const PORT = 3000;
+
+app.use(express.json());
+
+
+const students = [
+  { id: 1, name: "John Doe", age: 20, course: "Computer Science", email: "john.doe@email.com" },
+  { id: 2, name: "Jane Smith", age: 19, course: "Mathematics", email: "jane.smith@email.com" },
+  { id: 3, name: "Mike Johnson", age: 21, course: "Physics", email: "mike.johnson@email.com" }
+];
+
+
+app.get('/', (req, res) => {
+  res.json({
+    message: "Welcome to Student API",
+    endpoints: {
+      "GET /students": "Get all students",
+      "GET /students/:id": "Get student by ID",
+      "POST /students": "Add new student"
+    }
+  });
+});
+
+
+app.get('/students', (req, res) => {
+  res.json({ success: true, count: students.length, data: students });
+});
+
+
+app.get('/students/:id', (req, res) => {
+  const studentId = parseInt(req.params.id);
+  const student = students.find(s => s.id === studentId);
+
+  if (!student) {
+    return res.status(404).json({ success: false, message: "Student not found" });
+  }
+
+  res.json({ success: true, data: student });
+});
+
+
+app.post('/students', (req, res) => {
+  const { name, age, course, email } = req.body;
+
+  if (!name || !age || !course || !email) {
+    return res.status(400).json({ success: false, message: "Please provide all required fields" });
+  }
+
+  const newStudent = {
+    id: students.length + 1,
+    name,
+    age: parseInt(age),
+    course,
+    email
+  };
+
+  students.push(newStudent);
+
+  res.status(201).json({ success: true, message: "Student added successfully", data: newStudent });
+});
+
+
+app.listen(PORT, () => {
+  console.log(` Server is running on http://localhost:${PORT}`);
+});
+
+
+### For run a coed:
+run in terminal this code
+node app.js
+
+
