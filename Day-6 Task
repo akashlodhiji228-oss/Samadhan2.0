@@ -1,0 +1,53 @@
+### Day 6: Profile Card Component
+
+ 
+### Steps I Followed
+
+###File: ProfileVCrd.jsx
+  
+import React from 'react';
+
+const ProfileCard = ({ name, title, description }) => {
+  return (
+    <div style={{ border: '1px solid #ccc', padding: '20px', borderRadius: '5px', width: '300px' }}>
+      <h2>{name}</h2>
+      <p><strong>{title}</strong></p>
+      <p>{description}</p>
+    </div>
+  );
+};
+
+export default ProfileCard;
+
+
+
+###File: App.jsx 
+
+import React from 'react';
+import ProfileCard from './ProfileCard';
+
+function App() {
+  return (
+    <div style={{ padding: '20px' }}>
+      <ProfileCard 
+        name="John Doe" 
+        title="Software Developer" 
+        description="Passionate about building web applications with React." 
+      />
+    </div>
+  );
+}
+export default App;
+
+
+
+### For Run THe Code:
+
+npm run dev
+
+
+
+
+
+
+
