@@ -1,0 +1,43 @@
+import React, { useState } from 'react';
+
+function TodoApp() {
+  const [todos, setTodos] = useState([]);
+  const [input, setInput] = useState('');
+
+  const handleChange = (e) => {
+    setInput(e.target.value);
+  };
+
+  const handleAdd = () => {
+    if (input.trim() !== '') {
+      setTodos([...todos, { id: Date.now(), text: input }]);
+      setInput('');
+    }
+  };
+
+  const handleDelete = (id) => {
+    setTodos(todos.filter(todo => todo.id !== id));
+  };
+
+  return (
+    <div>
+      <h2>To-Do List</h2>
+      <input
+        value={input}
+        onChange={handleChange}
+        placeholder="Add a new task"
+      />
+      <button onClick={handleAdd}>Add</button>
+      <ul>
+        {todos.map(todo => (
+          <li key={todo.id}>
+            {todo.text}
+            <button onClick={() => handleDelete(todo.id)}>Delete</button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export default TodoApp;
