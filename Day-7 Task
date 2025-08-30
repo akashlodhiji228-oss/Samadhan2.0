@@ -1,0 +1,47 @@
+### Day 7: Counter + Live Preview
+
+ 
+### Steps I Followed
+
+###File:
+  
+import React, { useState } from 'react';
+
+function App() {
+  
+  const [count, setCount] = useState(0);
+  
+  const [text, setText] = useState('');
+
+  return (
+    <div>
+      <h2>Counter</h2>
+      <button onClick={() => setCount(count - 1)}>-</button>
+      <span style={{ margin: '0 1em' }}>{count}</span>
+      <button onClick={() => setCount(count + 1)}>+</button>
+
+      <h2>Live Text Preview</h2>
+      <input
+        type="text"
+        value={text}
+        onChange={e => setText(e.target.value)}
+        placeholder="Type something..."
+      />
+      <p>Preview: {text}</p>
+    </div>
+  );
+}
+
+export default App;
+
+
+
+
+### For Run The Code:
+
+nnpm start
+
+
+
+
+
