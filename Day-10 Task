@@ -1,0 +1,42 @@
+### Day 10: Styled Product Card List
+ 
+### Steps I Followed
+
+###File: index.css
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+###File: ProductCard.jsx
+
+const ProductCard = ({ name, category, price }) => (
+  <div className="max-w-xs rounded overflow-hidden shadow-lg bg-white">
+    <div className="px-6 py-4">
+      <div className="font-bold text-xl mb-2">{name}</div>
+      <p className="text-gray-700 text-base">{category}</p>
+      <p className="text-green-700 font-semibold mt-2">${price}</p>
+    </div>
+  </div>
+);
+export default ProductCard;
+
+
+###ProductCard:
+import ProductCard from './ProductCard';
+
+const products = [
+  { name: "Super Gadget", category: "Electronics", price: 49.99 },
+  { name: "Comfy Pillow", category: "Home", price: 19.99 },
+];
+
+function ProductList() {
+  return (
+    <div className="flex gap-4 flex-wrap">
+      {products.map((prod, idx) => (
+        <ProductCard key={idx} {...prod} />
+      ))}
+    </div>
+  );
+}
+export default ProductList;
