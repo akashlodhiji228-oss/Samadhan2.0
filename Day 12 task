@@ -1,0 +1,105 @@
+### Day 12: TO-Do App (With Node Backend)
+
+ 
+### Steps I Followed
+
+###File: server.js (React + API)
+
+const express = require('express');
+const cors = require('cors');
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+
+let todos = [
+  { id: 1, text: "Learn React" },
+  { id: 2, text: "Build a To-Do App" }
+];
+
+// Fetch all todos
+app.get('/api/todos', (req, res) => {
+  res.json(todos);
+});
+
+// Add a new todo
+app.post('/api/todos', (req, res) => {
+  const newTodo = { id: Date.now(), text: req.body.text };
+  todos.push(newTodo);
+  res.status(201).json(newTodo);
+});
+
+// Delete a todo
+app.delete('/api/todos/:id', (req, res) => {
+  todos = todos.filter(todo => todo.id !== parseInt(req.params.id));
+  res.sendStatus(204);
+});
+
+app.listen(5000, () => console.log('Backend running on http://localhost:5000'));
+
+###Start Backend:
+
+node server.js
+
+###File: App.js (Frontend)
+
+import React, { useState, useEffect } from "react";
+
+function App() {
+  const [todos, setTodos] = useState([]);
+  const [input, setInput] = useState("");
+
+  // Fetch todos from backend
+  useEffect(() => {
+    fetch("http://localhost:5000/api/todos")
+      .then(res => res.json())
+      .then(data => setTodos(data));
+  }, []);
+
+  // Add todo
+  const handleAdd = async () => {
+    if (!input.trim()) return;
+    const res = await fetch("http://localhost:5000/api/todos", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text: input })
+    });
+    const newTodo = await res.json();
+    setTodos([...todos, newTodo]);
+    setInput("");
+  };
+
+  // Delete todo
+  const handleDelete = async id => {
+    await fetch(http://localhost:5000/api/todos/${id}, { method: "DELETE" });
+    setTodos(todos.filter(todo => todo.id !== id));
+  };
+
+  return (
+    <div style={{ maxWidth: 400, margin: "auto" }}>
+      <h2>To-Do App</h2>
+      <input
+        value={input}
+        onChange={e => setInput(e.target.value)}
+        placeholder="Add todo"
+      />
+      <button onClick={handleAdd}>Add</button>
+      <ul>
+        {todos.map(todo => (
+          <li key={todo.id}>
+            {todo.text}
+            <button style={{ marginLeft: 10 }} onClick={() => handleDelete(todo.id)}>
+              Delete
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export default App;
+
+###Start Backend:
+
+node server.js
