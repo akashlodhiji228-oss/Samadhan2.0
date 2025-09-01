@@ -1,0 +1,64 @@
+### Day 11: Student Directory (Backend-Frontend)
+
+ 
+### Steps I Followed
+
+###File: app.js
+
+const express = require('express');
+const bodyParser = require('body-parser');
+const app = express();
+
+app.use(bodyParser.json());
+
+let students = [
+  { id: 1, name: 'Amit', age: 20 },
+  { id: 2, name: 'Sara', age: 21 }
+];
+
+// GET all students
+app.get('/students', (req, res) => {
+  res.json(students);
+});
+
+// GET student by ID
+app.get('/students/:id', (req, res) => {
+  const student = students.find(s => s.id === parseInt(req.params.id));
+  if (!student) return res.status(404).send('Student not found');
+  res.json(student);
+});
+
+// POST create new student
+app.post('/students', (req, res) => {
+  const { name, age } = req.body;
+  const newStudent = { id: students.length + 1, name, age };
+  students.push(newStudent);
+  res.status(201).json(newStudent);
+});
+
+// PUT update existing student
+app.put('/students/:id', (req, res) => {
+  const student = students.find(s => s.id === parseInt(req.params.id));
+  if (!student) return res.status(404).send('Student not found');
+  student.name = req.body.name;
+  student.age = req.body.age;
+  res.json(student);
+});
+
+// DELETE student by ID
+app.delete('/students/:id', (req, res) => {
+  const idx = students.findIndex(s => s.id === parseInt(req.params.id));
+  if (idx === -1) return res.status(404).send('Student not found');
+  const removed = students.splice(idx, 1);
+  res.json(removed);
+});
+
+// Start server
+app.listen(3000, () => {
+  console.log('Server running on http://localhost:3000');
+});
+
+
+###For Run The Code:
+
+node app.js
