@@ -1,0 +1,86 @@
+### Day 13: Notes App (Full-stack CRUD)
+
+ 
+### Steps I Followed
+
+###File: app.js
+
+const express = require('express');
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+
+const app = express();
+const port = 3000;
+
+app.use(bodyParser.json());
+
+// Connect to MongoDB
+mongoose.connect('mongodb://localhost:27017/notesDB', { useNewUrlParser: true, useUnifiedTopology: true });
+
+// Define Note Schema and Model
+const noteSchema = new mongoose.Schema({
+  title: String,
+  content: String,
+});
+
+const Note = mongoose.model('Note', noteSchema);
+
+// Routes
+
+// Get all notes
+app.get('/notes', async (req, res) => {
+  const notes = await Note.find();
+  res.json(notes);
+});
+
+// Get a note by ID
+app.get('/notes/:id', async (req, res) => {
+  const note = await Note.findById(req.params.id);
+  res.json(note);
+});
+
+// Create a new note
+app.post('/notes', async (req, res) => {
+  const newNote = new Note({
+    title: req.body.title,
+    content: req.body.content,
+  });
+  await newNote.save();
+  res.json(newNote);
+});
+
+// Update a note
+app.put('/notes/:id', async (req, res) => {
+  const updatedNote = await Note.findByIdAndUpdate(
+    req.params.id,
+    { title: req.body.title, content: req.body.content },
+    { new: true });
+  res.json(updatedNote);
+});
+
+// Delete a note
+app.delete('/notes/:id', async (req, res) => {
+  await Note.findByIdAndDelete(req.params.id);
+  res.json({ message: 'Note deleted' });
+});
+
+// Start server
+app.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}`);
+});
+
+
+###For Run That Code:
+
+
+node app.js
+
+
+
+
+
+
+
+
+
+  
