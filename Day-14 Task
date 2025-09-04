@@ -1,0 +1,74 @@
+### Day 14: Backend-only Auth (register/login user)
+
+ 
+### Steps I Followed
+
+###For Project Setup:
+
+mkdir auth-app
+cd auth-app
+npm init -y
+npm install express mongoose bcryptjs jsonwebtoken body-parser
+
+
+###File: user.js
+
+// User.js
+const mongoose = require('mongoose');
+const userSchema = new mongoose.Schema({
+  username: { type: String, required: true, unique: true },
+  password: { type: String, required: true }
+});
+module.exports = mongoose.model('User', userSchema);
+
+
+###File: app.js
+const express = require('express');
+const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const bodyParser = require('body-parser');
+const User = require('./User');
+
+const app = express();
+const port = 3000;
+const JWT_SECRET = 'replace_this_with_a_long_random_secret'; // Use env variable in real apps
+
+app.use(bodyParser.json());
+
+// Connect to MongoDB
+mongoose.connect('mongodb://localhost:27017/authApp', { useNewUrlParser: true, useUnifiedTopology: true });
+
+// Register API
+app.post('/register', async (req, res) => {
+  const { username, password } = req.body;
+  const hashed = await bcrypt.hash(password, 10);
+  try {
+    const user = new User({ username, password: hashed });
+    await user.save();
+    res.status(201).json({ message: 'User registered' });
+  } catch (err) {
+    res.status(400).json({ message: 'Username already exists' });
+  }
+});
+
+// Login API
+app.post('/login', async (req, res) => {
+  const { username, password } = req.body;
+  const user = await User.findOne({ username });
+  if (!user) return res.status(400).json({ message: 'Invalid credentials' });
+
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
+
+  // Generate JWT token
+  const token = jwt.sign({ userId: user._id, username: user.username }, JWT_SECRET, { expiresIn: "1h" });
+  res.json({ message: 'Login successful', token });
+});
+
+app.listen(port, () => console.log(`Server listening at http://localhost:${port}`));
+
+
+###For Run The Code:
+
+node app.js
