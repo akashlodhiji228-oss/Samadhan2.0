@@ -1,0 +1,177 @@
+### Day 19: Build a social platform with user interaction
+
+ 
+### Steps I Followed
+
+
+###File: app.js
+
+
+import React, { useState } from "react";
+
+const initialUsers = [
+  { id: 1, name: "Alice", avatar: "🦊" },
+  { id: 2, name: "Bob", avatar: "🐼" },
+];
+const initialPosts = [
+  {
+    id: 1,
+    userId: 1,
+    text: "Hello, world!",
+    likes: [],
+    comments: [
+      { id: 1, userId: 2, text: "Hi Alice!" }
+    ]
+  },
+  {
+    id: 2,
+    userId: 2,
+    text: "First post by Bob.",
+    likes: [],
+    comments: []
+  }
+];
+
+export default function SocialMediaDashboard() {
+  const [users] = useState(initialUsers);
+  const [activeUserId, setActiveUserId] = useState(1);
+  const [posts, setPosts] = useState(initialPosts);
+  const [newPost, setNewPost] = useState("");
+  const [newComment, setNewComment] = useState({});
+
+  // Get active user
+  const activeUser = users.find(u => u.id === activeUserId);
+
+  // Add a new post
+  const addPost = () => {
+    if (!newPost) return;
+    setPosts([
+      ...posts,
+      {
+        id: posts.length + 1,
+        userId: activeUser.id,
+        text: newPost,
+        likes: [],
+        comments: []
+      }
+    ]);
+    setNewPost("");
+  };
+
+  // Like/unlike post
+  const toggleLike = postId => {
+    setPosts(posts.map(post =>
+      post.id === postId
+        ? {
+            ...post,
+            likes: post.likes.includes(activeUser.id)
+              ? post.likes.filter(uid => uid !== activeUser.id)
+              : [...post.likes, activeUser.id]
+          }
+        : post
+    ));
+  };
+
+  // Add a comment
+  const addComment = postId => {
+    const commentText = newComment[postId];
+    if (!commentText) return;
+    setPosts(posts.map(post =>
+      post.id === postId
+        ? {
+            ...post,
+            comments: [
+              ...post.comments,
+              {
+                id: post.comments.length + 1,
+                userId: activeUser.id,
+                text: commentText
+              }
+            ]
+          }
+        : post
+    ));
+    setNewComment({ ...newComment, [postId]: "" });
+  };
+
+  return (
+    <div style={{ fontFamily: "sans-serif", maxWidth: 600, margin: "auto", padding: 24 }}>
+      <h2>Social Media Dashboard</h2>
+      <div>
+        <label>
+          Switch User:{" "}
+          <select
+            value={activeUserId}
+            onChange={e => setActiveUserId(Number(e.target.value))}
+          >
+            {users.map(u => (
+              <option key={u.id} value={u.id}>{u.avatar} {u.name}</option>
+            ))}
+          </select>
+        </label>
+      </div>
+
+      <section style={{ marginTop: 24 }}>
+        <b>{activeUser.avatar} {activeUser.name}'s Profile</b>
+        <hr />
+        <div>Posts: {posts.filter(p => p.userId === activeUser.id).length}</div>
+        <div>Likes Given: {
+          posts.reduce((c, p) =>
+            c + (p.likes.includes(activeUser.id) ? 1 : 0), 0)
+        }</div>
+      </section>
+
+      <section style={{ marginTop: 24 }}>
+        <h4>New Post</h4>
+        <input
+          value={newPost}
+          onChange={e => setNewPost(e.target.value)}
+          placeholder="Share something..."
+        />
+        <button onClick={addPost}>Post</button>
+      </section>
+
+      <section style={{ marginTop: 24 }}>
+        <h4>Feed</h4>
+        {posts.slice().reverse().map(post => {
+          const user = users.find(u => u.id === post.userId);
+          return (
+            <div key={post.id}
+              style={{ border: "1px solid #eee", borderRadius: 8, margin: "12px 0", padding: 12 }}>
+              <b>{user.avatar} {user.name}:</b> {post.text}
+              <div>
+                <button onClick={() => toggleLike(post.id)}>
+                  {post.likes.includes(activeUser.id) ? "💖" : "🤍"} Like
+                </button>
+                <span> {post.likes.length} likes</span>
+              </div>
+              <div style={{ marginTop: 8 }}>
+                <b>Comments</b>
+                <ul>
+                  {post.comments.map(c => {
+                    const cu = users.find(u => u.id === c.userId);
+                    return <li key={c.id}><b>{cu.avatar}</b> {cu.name}: {c.text}</li>;
+                  })}
+                </ul>
+                <input
+                  value={newComment[post.id] || ""}
+                  onChange={e => setNewComment({ ...newComment, [post.id]: e.target.value })}
+                  placeholder="Add a comment..."
+                  style={{ marginRight: 8 }}
+                />
+                <button onClick={() => addComment(post.id)}>Add</button>
+              </div>
+            </div>
+          );
+        })}
+      </section>
+    </div>
+  );
+}
+
+
+
+###For run the code:
+
+
+ npm start
