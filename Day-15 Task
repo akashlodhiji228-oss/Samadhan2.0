@@ -1,0 +1,146 @@
+### Day 15: Complete Full-Stack App with Authentication
+
+ 
+### Steps I Followed
+
+###For Set up the project:
+
+npx create-react-app react-auth-app
+cd react-auth-app
+npm install axios react-router-dom
+
+
+###File: AuthContext.js
+
+import React, { createContext, useState, useContext } from "react";
+const AuthContext = createContext();
+
+export function useAuth() {
+  return useContext(AuthContext);
+}
+
+export function AuthProvider({ children }) {
+  // Check localStorage for the token
+  const [token, setToken] = useState(localStorage.getItem("token"));
+
+  const login = (token) => {
+    localStorage.setItem("token", token);
+    setToken(token);
+  };
+
+  const logout = () => {
+    localStorage.removeItem("token");
+    setToken(null);
+  };
+
+  return (
+    <AuthContext.Provider value={{ token, login, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+
+###File: Login.js
+
+
+import React, { useState } from "react";
+import axios from "axios";
+import { useAuth } from "./AuthContext";
+import { useNavigate } from "react-router-dom";
+
+export default function Login() {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    try {
+      const res = await axios.post("http://localhost:3000/login", {
+        username,
+        password,
+      });
+      login(res.data.token);
+      navigate("/dashboard");
+    } catch (err) {
+      setError("Login failed!");
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <h2>Login</h2>
+      <input value={username} onChange={e => setUsername(e.target.value)} placeholder="Username" required />
+      <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Password" required />
+      <button type="submit">Login</button>
+      {error && <p>{error}</p>}
+    </form>
+  );
+}
+
+
+
+###File: ProtectedRoute.js
+
+
+import { useAuth } from "./AuthContext";
+import { Navigate } from "react-router-dom";
+
+export default function ProtectedRoute({ children }) {
+  const { token } = useAuth();
+  return token ? children : <Navigate to="/login" replace />;
+}
+
+
+###File: Dashboard.js
+
+
+import React from "react";
+import { useAuth } from "./AuthContext";
+
+export default function Dashboard() {
+  const { logout } = useAuth();
+  return (
+    <div>
+      <h1>Dashboard (Protected)</h1>
+      <button onClick={logout}>Logout</button>
+    </div>
+  );
+}
+
+
+###File: App.js
+
+import React from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./AuthContext";
+import Login from "./Login";
+import Dashboard from "./Dashboard";
+import ProtectedRoute from "./ProtectedRoute";
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/dashboard" element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/" element={<Login />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
+  );
+}
+
+
+###For run the code:
+
+npm start
+
