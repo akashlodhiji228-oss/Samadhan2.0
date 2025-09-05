@@ -1,0 +1,145 @@
+### Day 21: Build your professional developer portfolio
+
+ 
+### Steps I Followed
+
+
+###File: App.js
+
+import React, { useState } from "react";
+
+// Dummy projects data
+const projects = [
+  {
+    title: "Weather App",
+    description: "A weather forecasting app using API integration.",
+    link: "#"
+  },
+  {
+    title: "Social Dashboard",
+    description: "A basic social media dashboard in React.",
+    link: "#"
+  },
+  {
+    title: "Portfolio Website",
+
+description: "This developer portfolio homepage.",
+    link: "#"
+  }
+];
+
+export default function App() {
+  const [form, setForm] = useState({ name: "", email: "", message: "" });
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setSubmitted(true);
+  };
+
+  return (
+    <div style={{
+      fontFamily: "sans-serif",
+      maxWidth: 600,
+      margin: "auto",
+      padding: 32,
+      background: "#F9F9F9"
+
+}}>
+      {/* Branding */}
+      <header style={{ textAlign: "center", marginBottom: 32 }}>
+        <img
+          src="https://i.pravatar.cc/120"
+          alt="Profile"
+          style={{ borderRadius: "50%", border: "3px solid #333" }}
+        />
+        <h2 style={{ margin: 16 }}>Alex Doe</h2>
+        <p style={{ color: "#555" }}>Full Stack Developer | React Enthusiast</p>
+        <div>
+          <a href="https://github.com/" style={{ margin: "0 8px" }}>GitHub</a>
+          <a href="https://linkedin.com/" style={{ margin: "0 8px" }}>LinkedIn</a>
+        </div>
+      </header>
+
+      {/* Project Showcase */}
+      <section style={{ marginBottom: 32 }}>
+        <h3>Projects</h3>
+
+<ul style={{ padding: 0, listStyle: "none" }}>
+          {projects.map((proj) => (
+            <li key={proj.title} style={{
+              background: "#fff",
+              borderRadius: 8,
+              margin: "12px 0",
+              boxShadow: "0 1px 3px #ddd",
+              padding: 16
+            }}>
+              <b>{proj.title}</b>
+              <p>{proj.description}</p>
+              <a href={proj.link}>Live Demo</a>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      {/* Contact Form */}
+      <section style={{ background: "#fff", padding: 24, borderRadius: 8, boxShadow: "0 1px 3px #ddd" }}>
+        <h3>Contact Me</h3>
+        {submitted ? (
+          <div style={{ color: 'green', margin: '14px 0'
+
+}}>Thank you! Your message has been sent.</div>
+        ) : (
+          <form onSubmit={handleSubmit}>
+            <input
+              type="text"
+              name="name"
+              placeholder="Your Name"
+              required
+              value={form.name}
+              onChange={handleChange}
+              style={{ marginBottom: 12, width: "100%", padding: 8 }}
+            />
+            <input
+              type="email"
+              name="email"
+              placeholder="Your Email"
+              required
+              value={form.email}
+              onChange={handleChange}
+              style={{ marginBottom: 12, width: "100%", padding: 8 }}
+            />
+            <textarea
+
+name="message"
+              placeholder="Your Message"
+              required
+              value={form.message}
+              onChange={handleChange}
+              style={{ marginBottom: 12, width: "100%", padding: 8, minHeight: 60 }}
+            />
+            <button type="submit" style={{
+              background: "#333",
+              color: "#fff",
+              border: "none",
+              borderRadius: 4,
+              padding: "8px 16px",
+              cursor: "pointer"
+            }}>
+              Send
+            </button>
+          </form>
+        )}
+      </section>
+    </div>
+  );
+
+}
+
+
+
+###For run the code:
+
+
+npm start
