@@ -1,0 +1,101 @@
+### Day 20: Create a weather forecast app with location features
+
+ 
+### Steps I Followed
+
+
+###File: App.js
+
+import React, { useState } from "react";
+
+// API KEY for OpenWeatherMap (register for free on openweathermap.org)
+const WEATHER_API_KEY = "YOUR_API_KEY"; // <-- Replace with your own
+
+function App() {
+  const [coords, setCoords] = useState(null);
+  const [weather, setWeather] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  // Get user location
+  const fetchLocation = () => {
+    if (!window.navigator.geolocation) {
+      alert("Geolocation not supported");
+      return;
+    }
+    setLoading(true);
+    window.navigator.geolocation.getCurrentPosition(
+      pos => {
+        setCoords({
+          lat: pos.coords.latitude,
+          lon: pos.coords.longitude
+        });
+        setLoading(false);
+      },
+      () => {
+        alert("Could not get location");
+        setLoading(false);
+      }
+    );
+  };
+
+  // Fetch weather for coordinates
+  React.useEffect(() => {
+    if (!coords) return;
+    setLoading(true);
+    fetch(
+      `https://api.openweathermap.org/data/2.5/weather?lat=${coords.lat}&lon=${coords.lon}&units=metric&appid=${WEATHER_API_KEY}`
+    )
+      .then(r => r.json())
+      .then(data => {
+        setWeather(data);
+        setLoading(false);
+      });
+  }, [coords]);
+
+  // Simple map URL (OpenStreetMap static image)
+  const mapUrl = coords
+    ? `https://staticmap.openstreetmap.de/staticmap.php?center=${coords.lat},${coords.lon}&zoom=12&size=400x200`
+    : null;
+
+  return (
+    <div style={{ fontFamily: "sans-serif", maxWidth: 400, margin: "auto", padding: 24 }}>
+      <h2>Weather App with Maps</h2>
+      <button onClick={fetchLocation} disabled={loading}>
+        {coords ? "Refresh Location" : "Get Location"}
+      </button>
+      {loading && <p>Loading...</p>}
+
+      {coords && (
+        <div style={{ marginTop: 24 }}>
+          <b>Location:</b> {coords.lat.toFixed(3)}, {coords.lon.toFixed(3)}
+          <br />
+          <img
+            src={mapUrl}
+            alt="Map"
+            style={{ border: "1px solid #ccc", margin: "12px 0", width: "100%" }}
+          />
+        </div>
+      )}
+
+      {weather && (
+        <div style={{ marginTop: 18 }}>
+          <h3>{weather.name}</h3>
+          <div>
+            🌡 {weather.main.temp} °C <br />
+            {weather.weather.description}
+          </div>
+          <div>🌬 Wind: {weather.wind.speed} m/s</div>
+          <div>💧 Humidity: {weather.main.humidity} %</div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default App;
+
+
+###For run the code:
+
+
+npm start
