@@ -1,0 +1,111 @@
+### Day 18: Create a Trello-like  project management tool
+
+ 
+### Steps I Followed
+
+###File: app.js
+
+import React, { useState } from "react";
+
+// Example initial data
+const initialData = [
+  { id: 1, text: "Setup project" },
+  { id: 2, text: "Create Kanban columns" },
+  { id: 3, text: "Add drag & drop" }
+];
+
+const columns = ["To Do", "In Progress", "Done"];
+
+const getEmptyBoard = () =>
+  columns.reduce((acc, column) => {
+    acc[column] = [];
+    return acc;
+  }, {});
+
+export default function TrelloMini() {
+  const [board, setBoard] = useState(() => {
+
+const b = getEmptyBoard();
+    b["To Do"] = initialData;
+    return b;
+  });
+  const [dragged, setDragged] = useState(null);
+
+  // Handle Drag Events
+  const onDragStart = (col, idx) => setDragged({ col, idx });
+  const onDrop = (colTarget) => {
+    if (!dragged) return;
+    const { col, idx } = dragged;
+    const card = board[col][idx];
+    const newBoard = { ...board };
+    newBoard[col] = board[col].filter((_, i) => i !== idx);
+    newBoard[colTarget] = [...board[colTarget], card];
+    setBoard(newBoard);
+    setDragged(null);
+  };
+
+  // Progress tracking
+  const total = columns.reduce((sum, col) => sum + board[col].length, 0);
+
+const done = board["Done"].length;
+  const progress = total ? Math.round((done / total) * 100) : 0;
+
+  return (
+    <div style={{ fontFamily: "sans-serif", padding: 24 }}>
+      <h2>Trello Mini Board</h2>
+      <div style={{ display: "flex", gap: 24 }}>
+        {columns.map((col) => (
+          <div
+            key={col}
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={() => onDrop(col)}
+            style={{
+              background: "#f0f0f0",
+              padding: 12,
+              borderRadius: 8,
+              minWidth: 180,
+              minHeight: 200
+            }}
+          >
+            <b>{col}</b>
+            <hr />
+
+{board[col].map((card, idx) => (
+              <div
+                key={card.id}
+                draggable
+                onDragStart={() => onDragStart(col, idx)}
+                style={{
+                  background: "#fff",
+                  margin: "8px 0",
+                  padding: 8,
+                  borderRadius: 4,
+                  cursor: "grab",
+                  boxShadow: "0 2px 4px #ccc"
+                }}
+              >
+                {card.text}
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+      <div style={{ marginTop: 24 }}>
+        <b>Progress:</b> {done}/{total} tasks done {" "}
+        <progress value={done} max={total}></progress>
+
+{progress}%
+      </div>
+      <div style={{ fontSize: 12, color: "#888", marginTop: 10 }}>
+        (Add backend, authentication, and team sync for full collaboration)
+      </div>
+    </div>
+  );
+}
+
+
+
+###For run the code:
+
+
+npm start
