@@ -1,0 +1,86 @@
+### Day 16: Build a complete online store
+
+ 
+### Steps I Followed
+
+
+###File: Node.js
+
+// app.js
+const express = require('express');
+const bodyParser = require('body-parser');
+const session = require('express-session');
+const stripe = require('stripe')('YOUR_STRIPE_SECRET_KEY'); // Replace with your key
+
+const app = express();
+app.use(bodyParser.json());
+
+// Simple in-memory database for demo (replace with MongoDB/Postgres for production)
+const products = [
+  { id: 1, name: "Red T-Shirt", price: 19.99, image: "redshirt.jpg" },
+  { id: 2, name: "Blue Jeans", price: 39.99, image: "jeans.jpg" },
+  { id: 3, name: "Sneakers", price: 69.99, image: "sneakers.jpg" },
+];
+
+// Session cart setup
+app.use(session({
+  secret: "secret-key-123",
+  resave: false,
+  saveUninitialized: true
+}));
+
+// Product catalog
+app.get('/products', (req, res) => {
+  res.json(products);
+});
+
+// Add to cart
+app.post('/cart', (req, res) => {
+  const { productId, qty } = req.body;
+  if (!req.session.cart) req.session.cart = [];
+  const product = products.find(p => p.id === productId);
+  if (!product) return res.status(404).json({ error: "Product not found" });
+  const cartItem = req.session.cart.find(item => item.id === productId);
+  if (cartItem) cartItem.qty += qty;
+  else req.session.cart.push({ ...product, qty });
+  res.json(req.session.cart);
+});
+
+// View cart
+app.get('/cart', (req, res) => {
+  res.json(req.session.cart || []);
+});
+
+// Remove item from cart
+app.delete('/cart/:productId', (req, res) => {
+  const productId = parseInt(req.params.productId);
+  req.session.cart = (req.session.cart || []).filter(item => item.id !== productId);
+  res.json(req.session.cart);
+});
+
+// Checkout + Stripe payment
+app.post('/checkout', async (req, res) => {
+  const { token } = req.body;
+  const cart = req.session.cart || [];
+  if (!cart.length) return res.status(400).json({ error: "Cart empty" });
+  const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+  try {
+    await stripe.charges.create({
+      amount: Math.round(total * 100), // cents
+      currency: 'usd',
+      source: token.id,
+      description: 'Demo E-commerce Purchase'
+    });
+    req.session.cart = [];
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Payment failed', details: err.message });
+  }
+});
+
+app.listen(4000, () => console.log("E-commerce backend running on http://localhost:4000"));
+
+
+###For Run The Code:
+
+node app.js
